@@ -5,7 +5,15 @@ var Schema   = mongoose.Schema;
 var userSchema = new Schema({
 	'username' : String,
 	'password' : String,
-	'email' : String
+	'email' : String,
+	'favs' : [{
+		type: Schema.Types.ObjectId,
+		ref: 'location'
+	}],
+	'saved' : [{
+		type: Schema.Types.ObjectId,
+		ref: 'location'
+	}],
 });
 
 userSchema.pre('save', function(next){
