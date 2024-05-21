@@ -7,5 +7,5 @@ var locationSchema = new Schema({
 	'city' : String
 });
 
-var Location = mongoose.model('location', userSchema);
+var Location = mongoose.model('location', locationSchema);
 module.exports = Location;
