@@ -1,7 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale } from 'chart.js';
 
 function Home(){
     const [weather, setWeather] = useState(null);
+    let chartRef = useRef(null);
+    let chartInstance = useRef(null);
+    Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -59,6 +63,49 @@ function Home(){
         iconUrlDaily = `http://openweathermap.org/img/wn/${weather.daily[0].weather[0].icon}.png`;
     }
 
+    useEffect(() => {
+        if (weather && weather.daily) {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+                chartInstance.current = null;
+            }
+            let ctx = chartRef.current.getContext('2d');
+    
+            chartInstance.current = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weather.hourly.slice(0, 24).map((_, i) => `${i + 1} h`),
+                    datasets: [{
+                        label: 'Temperature',
+                        data: weather.hourly.slice(0, 24).map(d => d.temp - 273.15),
+                        borderColor: 'rgb(75, 192, 192)',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Temperature over the next 24 hours'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return  value + '°C';
+                                }
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    }, [weather]);
+
+    const canvasStyle = {
+        width: '600px'
+    };
+
     return (
         <>
             <h1>Current weather</h1>
@@ -85,6 +132,10 @@ function Home(){
                 <p>Sunset: {sunsetStr}</p>
                 <p>Humidity: {weather.daily[0].humidity} %</p>
                 <p>Wind speed: {weather.daily[0].wind_speed} km/h</p>
+                <h1>Temperature over the next 24 hours</h1>
+                <div style={canvasStyle}>
+                    <canvas ref={chartRef} />
+                </div>
             </>
              )}
         </>
