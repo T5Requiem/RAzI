@@ -1,15 +1,7 @@
 var UserModel = require('../models/userModel.js');
 
-/**
- * userController.js
- *
- * @description :: Server-side logic for managing users.
- */
 module.exports = {
 
-    /**
-     * userController.list()
-     */
     list: function (req, res) {
         UserModel.find(function (err, users) {
             if (err) {
@@ -23,9 +15,6 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.show()
-     */
     show: function (req, res) {
         var id = req.params.id;
 
@@ -47,9 +36,6 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.create()
-     */
     create: function (req, res) {
         var user = new UserModel({
 			username : req.body.username,
@@ -66,13 +52,10 @@ module.exports = {
                     error: err
                 });
             }
-            return res.redirect('/users/login');
+            return res.json(user);
         });
     },
 
-    /**
-     * userController.update()
-     */
     update: function (req, res) {
         var id = req.params.id;
 
@@ -109,9 +92,6 @@ module.exports = {
         });
     },
 
-    /**
-     * userController.remove()
-     */
     remove: function (req, res) {
         var id = req.params.id;
 
@@ -127,14 +107,6 @@ module.exports = {
         });
     },
 
-    showRegister: function(req, res){
-        res.render('user/register');
-    },
-
-    showLogin: function(req, res){
-        res.render('user/login');
-    },
-
     login: function(req, res, next){
         UserModel.authenticate(req.body.username, req.body.password, function(err, user){
             if(err || !user){
@@ -143,7 +115,7 @@ module.exports = {
                 return next(err);
             }
             req.session.userId = user._id;
-            res.redirect('/users/profile');
+            return res.json(user);
         });
     },
 
@@ -158,7 +130,7 @@ module.exports = {
                     err.status = 400;
                     return next(err);
                 } else{
-                    return res.render('user/profile', user);
+                    return res.json(user);
                 }
             }
         });  
@@ -170,7 +142,7 @@ module.exports = {
                 if(err){
                     return next(err);
                 } else{
-                    return res.redirect('/');
+                    return res.json({ message: 'Logout successful' });
                 }
             });
         }

@@ -1,16 +1,8 @@
 var LocationModel = require('../models/userModel.js');
 var LocationModel = require('../models/locationModel.js');
 
-/**
- * locationController.js
- *
- * @description :: Server-side logic for managing locations.
- */
 module.exports = {
 
-    /**
-     * locationController.list()
-     */
     list: function (req, res) {
         LocationModel.find(function (err, locations) {
             if (err) {
@@ -24,9 +16,6 @@ module.exports = {
         });
     },
 
-    /**
-     * locationController.show()
-     */
     show: function (req, res) {
         var id = req.params.id;
 
@@ -48,9 +37,6 @@ module.exports = {
         });
     },
 
-    /**
-     * locationController.create()
-     */
     create: function (req, res) {
         var location = new LocationModel({
 			long : req.body.long,
@@ -70,9 +56,6 @@ module.exports = {
         });
     },
 
-    /**
-     * locationController.update()
-     */
     update: function (req, res) {
         var id = req.params.id;
 
@@ -107,9 +90,6 @@ module.exports = {
         });
     },
 
-    /**
-     * locationController.remove()
-     */
     remove: function (req, res) {
         var id = req.params.id;
 

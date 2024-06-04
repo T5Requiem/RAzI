@@ -2,16 +2,8 @@ var WeatherModel = require('../models/userModel.js');
 var LocationModel = require('../models/locationModel.js');
 var WeatherModel = require('../models/weatherModel.js');
 
-/**
- * weatherController.js
- *
- * @description :: Server-side logic for managing weather.
- */
 module.exports = {
 
-    /**
-     * weatherController.list()
-     */
     list: function (req, res) {
         WeatherModel.find(function (err, weather) {
             if (err) {
@@ -25,9 +17,6 @@ module.exports = {
         });
     },
 
-    /**
-     * weatherController.show()
-     */
     show: function (req, res) {
         var id = req.params.id;
 
@@ -49,9 +38,6 @@ module.exports = {
         });
     },
 
-    /**
-     * weatherController.create()
-     */
     create: function (req, res) {
         var weather = new WeatherModel({
             temperature : req.body.temperature,
@@ -75,9 +61,6 @@ module.exports = {
         });
     },
 
-    /**
-     * weatherController.update()
-     */
     update: function (req, res) {
         var id = req.params.id;
 
@@ -116,9 +99,6 @@ module.exports = {
         });
     },
 
-    /**
-     * weatherController.remove()
-     */
     remove: function (req, res) {
         var id = req.params.id;
 

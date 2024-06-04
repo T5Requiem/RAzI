@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../userContext';
-import { Navigate } from 'react-router-dom';
 
 function Home(){
     const userContext = useContext(UserContext);
