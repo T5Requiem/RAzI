@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 // vključimo mongoose in ga povežemo z MongoDB
 var mongoose = require('mongoose');
-var mongoDB = "mongodb://127.0.0.1/vaja3";
+var mongoDB = "mongodb://127.0.0.1/projekt";
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 var db = mongoose.connection;
@@ -53,7 +53,7 @@ app.use(function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/weather', weatherRouter);
-app.use('/locations', locationRouter);
+app.use('/locations', locationsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

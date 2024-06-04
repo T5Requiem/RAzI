@@ -2,14 +2,14 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 
 var weatherSchema = new Schema({
-	'temperature' : Int,
-    'temperatureDay' : Int,
-    'temperatureNight' : Int,
-	'precipitation' : Int,
-    'humidity' : Int,
-    'wind' : Int,
+	'temperature' : Number,
+    'temperatureDay' : Number,
+    'temperatureNight' : Number,
+	'precipitation' : Number,
+    'humidity' : Number,
+    'wind' : Number,
     'desc' : String,
 });
 
-var Weather = mongoose.model('weather', userSchema);
+var Weather = mongoose.model('weather', weatherSchema);
 module.exports = Weather;
