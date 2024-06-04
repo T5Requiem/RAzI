@@ -10,7 +10,7 @@ function Login(){
 
     async function Login(e){
         e.preventDefault();
-        const res = await fetch("http://localhost:3001/users/login", {
+        const res = await fetch("http://localhost:3000/users/login", {
             method: "POST",
             credentials: "include",
             headers: { 'Content-Type': 'application/json'},

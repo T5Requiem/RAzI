@@ -13,7 +13,6 @@ function Header(props) {
                         {context => (
                             context.user ?
                                 <>
-                                    <li><Link to='/publish'>Publish</Link></li>
                                     <li><Link to='/profile'>Profile</Link></li>
                                     <li><Link to='/logout'>Logout</Link></li>
                                 </>
