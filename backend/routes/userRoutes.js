@@ -4,12 +4,12 @@ var userController = require('../controllers/userController.js');
 
 
 router.get('/', userController.list);
-router.get('/profile', userController.profile);
 router.get('/logout', userController.logout);
 router.get('/:id', userController.show);
 
 router.post('/', userController.create);
 router.post('/login', userController.login);
+router.post('/profile', userController.profile);
 router.post('/favourite', userController.addFavourite);
 
 router.put('/:id', userController.update);

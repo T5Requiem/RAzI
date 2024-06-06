@@ -157,6 +157,7 @@ function Home(){
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+                userID: user,
                 lat: lat,
                 long: long,
                 city: cityName

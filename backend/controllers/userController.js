@@ -110,7 +110,7 @@ module.exports = {
     login: function(req, res, next){
         UserModel.authenticate(req.body.username, req.body.password, function(err, user){
             if(err || !user){
-                var err = new Error('Wrong username or paassword');
+                var err = new Error('Wrong username or password');
                 err.status = 401;
                 return next(err);
             }
@@ -119,8 +119,9 @@ module.exports = {
         });
     },
 
-    profile: function(req, res,next){
-        UserModel.findById(req.session.userId)
+    profile: function(req, res, next){
+        var userId = req.body.userID;
+        UserModel.findById(userId)
         .exec(function(error, user){
             if(error){
                 return next(error);
@@ -133,7 +134,7 @@ module.exports = {
                     return res.json(user);
                 }
             }
-        });  
+        });
     },
 
     logout: function(req, res, next){
@@ -149,7 +150,7 @@ module.exports = {
     },
 
     addFavourite: function (req, res) {
-        var userId = req.session.userId;
+        var userId = req.body.userID;
         var city = req.body.city;
 
         LocationModel.findOne({ city: city }, function (err, existingLocation) {
