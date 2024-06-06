@@ -1,16 +1,25 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale } from 'chart.js';
+import { UserContext } from '../userContext';
 
 function Home(){
     const [weather, setWeather] = useState(null);
+    const { user } = useContext(UserContext);
     let chartRef = useRef(null);
     let chartInstance = useRef(null);
     Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale);
+
+    const [lat, setLat] = useState("");
+    const [long, setLong] = useState("");
+    const [city, setCity] = useState("");
+    const [cityName, setCityName] = useState("");
 
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const { latitude, longitude } = position.coords;
+                setLat(latitude);
+                setLong(longitude);
 
                 fetch(`http://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=a079118662ea266c81754b94e99980ab`)
                 .then(response => {
@@ -22,6 +31,7 @@ function Home(){
                 .then(data => {
                     console.log(data);
                     setWeather(data);
+                    setCityName("");
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation: ', error);
@@ -102,12 +112,76 @@ function Home(){
         }
     }, [weather]);
 
+    const handleSearch = (event) => {
+        event.preventDefault();
+    
+        fetch(`https://api.geoapify.com/v1/geocode/search?text=${city}&apiKey=ce191d9d40c548219acda46a66904290`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            const lat1 = data.features[0].geometry.coordinates[1];
+            const long1 = data.features[0].geometry.coordinates[0];
+            setLat(lat1);
+            setLong(long1);
+            return fetch(`http://api.openweathermap.org/data/3.0/onecall?lat=${lat1}&lon=${long1}&appid=a079118662ea266c81754b94e99980ab`);
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            setWeather(data);
+            setCityName(city + ":");
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation: ', error);
+        });
+    };
+
+    async function handleFavourite(e){
+        e.preventDefault();
+        if (!cityName) {
+            console.log('City name is not set. Cannot handle favourite.');
+            return;
+        }
+        const res = await fetch("http://164.8.222.5:3000/users/favourite", {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                lat: lat,
+                long: long,
+                city: cityName
+            })
+        });
+        const data = await res.json();
+        if(data._id !== undefined){
+            window.location.href="/";
+        }
+    }
+
     const canvasStyle = {
         width: '600px'
     };
 
     return (
         <>
+            {user && (
+                <form onSubmit={handleSearch}>
+                    <input type="text" placeholder="Search city" value={city} onChange={e => setCity(e.target.value)} />
+                    <button type="submit">Search</button>
+                    <button type="button" onClick={handleFavourite}>Favourite</button>
+                </form>
+            )}
+            <h1>{cityName}</h1>
             <h1>Current weather</h1>
             {weather && weather.current && (
             <>

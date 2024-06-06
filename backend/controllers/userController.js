@@ -1,4 +1,6 @@
 var UserModel = require('../models/userModel.js');
+var LocationModel = require('../models/locationModel.js');
+const e = require('express');
 
 module.exports = {
 
@@ -42,7 +44,6 @@ module.exports = {
 			password : req.body.password,
 			email : req.body.email,
             favs : [],
-            saved : [],
         });
 
         user.save(function (err, user) {
@@ -77,7 +78,6 @@ module.exports = {
 			user.password = req.body.password ? req.body.password : user.password;
 			user.email = req.body.email ? req.body.email : user.email;
             user.favs = req.body.favs ? req.body.favs : user.favs;
-            user.saved = req.body.saved ? req.body.saved : user.saved;
 			
             user.save(function (err, user) {
                 if (err) {
@@ -146,5 +146,98 @@ module.exports = {
                 }
             });
         }
+    },
+
+    addFavourite: function (req, res) {
+        var userId = req.session.userId;
+        var city = req.body.city;
+
+        LocationModel.findOne({ city: city }, function (err, existingLocation) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when searching for location',
+                    error: err
+                });
+            }
+    
+            if (existingLocation) {
+                UserModel.findById(userId, function(err, user) {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).json({
+                            message: 'Error when getting user.',
+                            error: err
+                        });
+                    }
+                
+                    if (!user) {
+                        return res.status(404).json({
+                            message: 'No such user'
+                        });
+                    }
+                
+                    var locationId = existingLocation._id;
+                    user.favs.push(locationId);
+                
+                    user.save(function(err, updatedUser) {
+                        if (err) {
+                            console.error(err);
+                            return res.status(500).json({
+                                message: 'Error when updating user.',
+                                error: err
+                            });
+                        }
+                
+                        return res.json(updatedUser);
+                    });
+                });
+            } else {
+                var location = new LocationModel({
+                    lat: req.body.lat,
+                    long: req.body.long,
+                    city: city
+                });
+    
+                location.save(function (err, newLocation) {
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Error when creating location',
+                            error: err
+                        });
+                    }
+    
+                    UserModel.findById(userId, function(err, user) {
+                        if (err) {
+                            console.error(err);
+                            return res.status(500).json({
+                                message: 'Error when getting user.',
+                                error: err
+                            });
+                        }
+                    
+                        if (!user) {
+                            return res.status(404).json({
+                                message: 'No such user'
+                            });
+                        }
+                    
+                        var locationId = newLocation._id;
+                        user.favs.push(locationId);
+                    
+                        user.save(function(err, updatedUser) {
+                            if (err) {
+                                console.error(err);
+                                return res.status(500).json({
+                                    message: 'Error when updating user.',
+                                    error: err
+                                });
+                            }
+                    
+                            return res.json(updatedUser);
+                        });
+                    });
+                });
+            }
+        });
     }
 };

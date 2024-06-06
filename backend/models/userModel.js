@@ -9,11 +9,7 @@ var userSchema = new Schema({
 	'favs' : [{
 		type: Schema.Types.ObjectId,
 		ref: 'location'
-	}],
-	'saved' : [{
-		type: Schema.Types.ObjectId,
-		ref: 'location'
-	}],
+	}]
 });
 
 userSchema.pre('save', function(next){
