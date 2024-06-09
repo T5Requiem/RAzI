@@ -14,6 +14,7 @@ function Home(){
     const [city, setCity] = useState("");
     const [cityName, setCityName] = useState("");
     const [favourites, setFavourites] = useState([]);
+    const [workout, setWorkout] = useState([]);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -64,6 +65,7 @@ function Home(){
     let sunriseDate, sunriseHours, sunriseMinutes, sunriseStr;
     let sunsetDate, sunsetHours, sunsetMinutes, sunsetStr;
     let iconUrlCurrent, iconUrlDaily;
+    let weatherIcon, weatherDesc;
 
     if (weather && weather.current && weather.daily) {
         tempCelsius = weather.current.temp - 273.15;
@@ -83,11 +85,34 @@ function Home(){
         sunriseStr = sunriseHours + ':' + sunriseMinutes.substr(-2);
         sunsetStr = sunsetHours + ':' + sunsetMinutes.substr(-2);
 
+        weatherIcon = weather.current.weather[0].icon;
         iconUrlCurrent = `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}.png`;
         iconUrlDaily = `http://openweathermap.org/img/wn/${weather.daily[0].weather[0].icon}.png`;
     }
 
     useEffect(() => {
+        if (weather && weather.current) {
+            if(weatherIcon === "09d" || weatherIcon === "09n" || weatherIcon === "10d" || weatherIcon === "10n"){
+                weatherDesc = "precipitation";
+            }
+            else if(weatherIcon === "11d" || weatherIcon === "11n" || weatherIcon === "13d" || weatherIcon === "13n") {
+                weatherDesc = "storm or snow";
+            }
+            else {
+                weatherDesc = "no precipitation";
+            }
+            fetch("http://164.8.222.5:3000/workouts/workout", {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    weatherDesc: weatherDesc
+                })
+            })
+            .then(response => response.json())
+            .then(data => setWorkout(data))
+            .catch(error => console.error('There was a problem with the fetch operation: ', error));
+        }
         if (weather && weather.daily) {
             if (chartInstance.current) {
                 chartInstance.current.destroy();
@@ -247,6 +272,8 @@ function Home(){
                     <button type="button" onClick={handleFavourite}>Favourite</button>
                 </form>
             )}
+            <h2>Workout tips</h2>
+            <p>{workout && workout.workoutDesc}</p>
             <h1>{cityName}</h1>
             <h1>Current weather</h1>
             {weather && weather.current && (

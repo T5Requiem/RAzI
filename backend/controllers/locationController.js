@@ -1,4 +1,3 @@
-var LocationModel = require('../models/userModel.js');
 var LocationModel = require('../models/locationModel.js');
 
 module.exports = {

@@ -1,6 +1,5 @@
 var UserModel = require('../models/userModel.js');
 var LocationModel = require('../models/locationModel.js');
-const e = require('express');
 
 module.exports = {
 

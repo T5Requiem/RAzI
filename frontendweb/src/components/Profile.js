@@ -9,17 +9,16 @@ function Profile(){
     useEffect(function(){
         const getProfile = async function(){
             const res = await fetch("http://164.8.222.5:3000/users/profile", {
-            method: "POST",
-            credentials: "include",
-            headers: { 'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                userID: userContext.user
-            })
-        });
+                method: "POST",
+                credentials: "include",
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    userID: userContext.user
+                })
+            });
             const data = await res.json();
             setProfile(data);
         }
-        getProfile();
     }, []);
 
     return (

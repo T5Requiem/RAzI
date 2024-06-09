@@ -13,7 +13,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/userRoutes');
-var weatherRouter = require('./routes/weatherRoutes');
+var workoutRouter = require('./routes/workoutRoutes');
 var locationsRouter = require('./routes/locationRoutes');
 
 var app = express();
@@ -57,7 +57,7 @@ app.use(function (req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/weather', weatherRouter);
+app.use('/workouts', workoutRouter);
 app.use('/locations', locationsRouter);
 
 app.use(function(req, res, next) {
