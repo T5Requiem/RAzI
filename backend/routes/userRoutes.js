@@ -11,6 +11,7 @@ router.post('/', userController.create);
 router.post('/login', userController.login);
 router.post('/profile', userController.profile);
 router.post('/favourite', userController.addFavourite);
+router.post('/favourites', userController.getFavourite);
 
 router.put('/:id', userController.update);
 

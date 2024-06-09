@@ -13,6 +13,7 @@ function Home(){
     const [long, setLong] = useState("");
     const [city, setCity] = useState("");
     const [cityName, setCityName] = useState("");
+    const [favourites, setFavourites] = useState([]);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -40,7 +41,20 @@ function Home(){
                 console.error("Error Code = " + error.code + " - " + error.message);
             });
         }
-    }, []);
+        if (user) {
+            fetch("http://164.8.222.5:3000/users/favourites", {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userID: user
+                })
+            })
+            .then(response => response.json())
+            .then(data => setFavourites(data))
+            .catch(error => console.error('There was a problem with the fetch operation: ', error));
+        }
+    }, [user]);
 
     let tempCelsius = 0;
     let tempCelsiusDay = 0;
@@ -137,19 +151,63 @@ function Home(){
             return response.json();
         })
         .then(data => {
-            console.log(data);
             setWeather(data);
-            setCityName(city + ":");
+            setCityName(city);
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation: ', error);
         });
     };
 
+    async function handleCityClick(cityName1) {
+        fetch(`https://api.geoapify.com/v1/geocode/search?text=${cityName1}&apiKey=ce191d9d40c548219acda46a66904290`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            const lat1 = data.features[0].geometry.coordinates[1];
+            const long1 = data.features[0].geometry.coordinates[0];
+            setLat(lat1);
+            setLong(long1);
+            return fetch(`http://api.openweathermap.org/data/3.0/onecall?lat=${lat1}&lon=${long1}&appid=a079118662ea266c81754b94e99980ab`);
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            setWeather(data);
+            setCityName(cityName1);
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation: ', error);
+        });
+    }
+
     async function handleFavourite(e){
         e.preventDefault();
         if (!cityName) {
             console.log('City name is not set. Cannot handle favourite.');
+            return;
+        }
+        const resFavourites = await fetch("http://164.8.222.5:3000/users/favourites", {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userID: user
+            })
+        });
+
+        const favourites1 = await resFavourites.json();
+        if (favourites1.some(favourite => favourite.city === cityName)) {
+            console.log('User already has this location as a favourite.');
             return;
         }
         const res = await fetch("http://164.8.222.5:3000/users/favourite", {
@@ -175,6 +233,13 @@ function Home(){
 
     return (
         <>
+            {favourites.map((favourite, index) => (
+                <li key={index}>
+                    <a href="#" onClick={(e) => {e.preventDefault(); setCity(favourite.city, handleCityClick(favourite.city))}}>
+                        {favourite.city}
+                    </a>
+                </li>
+            ))}
             {user && (
                 <form onSubmit={handleSearch}>
                     <input type="text" placeholder="Search city" value={city} onChange={e => setCity(e.target.value)} />

@@ -240,5 +240,38 @@ module.exports = {
                 });
             }
         });
+    },
+
+    getFavourite: function(req, res) {
+        var userId = req.body.userID;
+    
+        UserModel.findById(userId, function(err, user) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({
+                    message: 'Error when getting user.',
+                    error: err
+                });
+            }
+    
+            if (!user) {
+                return res.status(404).json({
+                    message: 'No such user'
+                });
+            }
+            LocationModel.find({
+                '_id': { $in: user.favs}
+            }, function(err, locations) {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({
+                        message: 'Error when getting locations.',
+                        error: err
+                    });
+                }
+                console.log(locations);
+                return res.json(locations);
+            });
+        });
     }
 };
