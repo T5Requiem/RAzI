@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, TextInput, Button, Image } from 'react-native';
 import UserContext from '../userContext';
 import { useNavigation } from '@react-navigation/native';
-import Geolocation from 'react-native-geolocation-service';
+import * as Location from 'expo-location';
 
 function Home(){
     const [weather, setWeather] = useState(null);
@@ -17,35 +17,34 @@ function Home(){
     const navigation = useNavigation();
 
     useEffect(() => {
-        if (hasLocationPermission()) {
-            Geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setLat(latitude);
-                    setLong(longitude);
-    
-                    fetch(`http://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=a079118662ea266c81754b94e99980ab`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data);
-                        setWeather(data);
-                        setCityName("");
-                    })
-                    .catch(error => {
-                        console.error('There was a problem with the fetch operation: ', error);
-                    });
-                },
-                (error) => {
-                    console.error("Error Code = " + error.code + " - " + error.message);
-                },
-                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-            );
-        }
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                console.error('Permission to access location was denied');
+                return;
+            }
+
+            let location = await Location.getCurrentPositionAsync({});
+            const { latitude, longitude } = location.coords;
+            setLat(latitude);
+            setLong(longitude);
+
+            fetch(`http://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=a079118662ea266c81754b94e99980ab`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                setWeather(data);
+                setCityName("");
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation: ', error);
+            });
+        })();
         if (user) {
             fetch("http://164.8.222.5:3000/users/favourites", {
                 method: 'POST',
@@ -244,7 +243,7 @@ function Home(){
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>Current weather</Text>
             {weather && weather.current && (
                 <View>
-                    <Image source={{ uri: iconUrlCurrent }} />
+                    <Image source={{ uri: iconUrlCurrent }} style={{width: 50, height: 50}}/>
                     <Text>Description: {weather.current.weather[0].description}</Text>
                     <Text>Temperature: {tempCelsius.toFixed(2)} °C</Text>
                     <Text>Pressure: {weather.current.pressure} mb</Text>
@@ -255,7 +254,7 @@ function Home(){
             <Text style={{fontSize: 20, fontWeight: 'bold'}}>Weather today</Text>
             {weather && weather.daily && (
             <View>
-                <Image source={{ uri: iconUrlDaily }} />
+                <Image source={{ uri: iconUrlDaily }} style={{width: 50, height: 50}}/>
                 <Text>Description: {weather.daily[0].weather[0].description}</Text>
                 <Text>Temperature day: {tempCelsiusDay.toFixed(2)} °C</Text>
                 <Text>Temperature night: {tempCelsiusNight.toFixed(2)} °C</Text>
