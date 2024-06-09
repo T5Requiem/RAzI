@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, View } from 'react-native';
 import UserContext from '../userContext';
 import Home from './Home.js';
+import { ScrollView } from 'react-native';
 
 function IndexScreen({ navigation }) {
     const userContext = useContext(UserContext);
@@ -16,6 +17,7 @@ function IndexScreen({ navigation }) {
     }, [navigation]);
   
     return (
+      <ScrollView>
       <View>
         {userContext.user ? (
           <>
@@ -31,6 +33,7 @@ function IndexScreen({ navigation }) {
           </>
         )}
       </View>
+      </ScrollView>
     );
   }
   

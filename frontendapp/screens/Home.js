@@ -215,7 +215,7 @@ function Home(){
         });
         const data = await res.json();
         if(data._id !== undefined){
-            navigation.navigate('Header');
+            navigation.navigate('Weather App');
         }
     }
 

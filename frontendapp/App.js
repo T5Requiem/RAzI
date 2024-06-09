@@ -19,8 +19,8 @@ export default function App() {
   return (
       <UserContext.Provider value={{ user, setUser }}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Header">
-            <Stack.Screen name="Header" component={HeaderScreen} />
+          <Stack.Navigator initialRouteName="Weather App">
+            <Stack.Screen name="Weather App" component={HeaderScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen name="Logout" component={LogoutScreen} />
             <Stack.Screen name="Login" component={LoginScreen} />

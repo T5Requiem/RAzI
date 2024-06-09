@@ -12,7 +12,7 @@ function Logout() {
             await fetch("http://164.8.222.5:3000/users/logout");
             navigation.reset({
                 index: 0,
-                routes: [{ name: 'Header' }],
+                routes: [{ name: 'Weather App' }],
             });
         }
         logout();

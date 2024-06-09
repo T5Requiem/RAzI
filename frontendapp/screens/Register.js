@@ -22,7 +22,7 @@ function Register() {
         });
         const data = await res.json();
         if(data._id !== undefined){
-            navigation.navigate('Home');
+            navigation.navigate('Weather App');
         }
         else{
             setUsername("");

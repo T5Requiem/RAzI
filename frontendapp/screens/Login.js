@@ -23,7 +23,7 @@ function Login() {
         const data = await res.json();
         if (data._id !== undefined) {
             userContext.setUser(data);
-            navigation.navigate('Header');
+            navigation.navigate('Weather App');
         } else {
             setUsername("");
             setPassword("");
