@@ -19,7 +19,8 @@ function Profile(){
             const data = await res.json();
             setProfile(data);
         }
-    }, []);
+        getProfile();
+    }, [userContext.user]);
 
     return (
         <>
