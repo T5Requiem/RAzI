@@ -75,13 +75,14 @@ void init_temperature_sensor(I2C_HandleTypeDef *hi2c) {
 
 int16_t read_temperature(I2C_HandleTypeDef *hi2c) {
     uint8_t temp_data[2];
+    int8_t t1;
+    int8_t t2;
     int16_t raw_temp;
 
-    // Read OUT_TEMP_L_A (0x0C) and OUT_TEMP_H_A (0x0D)
-    HAL_I2C_Mem_Read(hi2c, LSM303AGR_I2C_ADDRESS, 0x0C, I2C_MEMADD_SIZE_8BIT, temp_data, 2, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Read(hi2c, LSM303AGR_I2C_ADDRESS, 0x0C, I2C_MEMADD_SIZE_8BIT, t1, 1, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Read(hi2c, LSM303AGR_I2C_ADDRESS, 0x0D, I2C_MEMADD_SIZE_8BIT, t2, 1, HAL_MAX_DELAY);
 
-    // Combine and format data
-    raw_temp = (int16_t)(temp_data[1] << 8 | temp_data[0]) >> 8;
+    raw_temp = ((int16_t)t2 << 8) | (uint8_t)t1;
 
     return raw_temp;
 }
