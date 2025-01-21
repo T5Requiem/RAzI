@@ -63,13 +63,11 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void init_temperature_sensor(I2C_HandleTypeDef *hi2c) {
-    uint8_t temp_cfg = 0xC0; // Enable temperature sensor
-    uint8_t ctrl_reg4 = 0x80; // Enable BDU
+    uint8_t temp_cfg = 0xC0;
+    uint8_t ctrl_reg4 = 0x80;
 
-    // Write to TEMP_CFG_REG_A (0x1F)
     HAL_I2C_Mem_Write(hi2c, LSM303AGR_I2C_ADDRESS, 0x1F, I2C_MEMADD_SIZE_8BIT, &temp_cfg, 1, HAL_MAX_DELAY);
 
-    // Write to CTRL_REG4_A (0x23)
     HAL_I2C_Mem_Write(hi2c, LSM303AGR_I2C_ADDRESS, 0x23, I2C_MEMADD_SIZE_8BIT, &ctrl_reg4, 1, HAL_MAX_DELAY);
 }
 
